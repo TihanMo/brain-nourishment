@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import brainIcon from '../assets/brain.png';
 import SettingsModal from '../components/SettingsModal';
+
+const SETTINGS_KEY = 'brain-nourishment-settings';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -11,18 +21,35 @@ export default function HomeScreen() {
   // Modal Sichtbarkeit
   const [settingsVisible, setSettingsVisible] = useState(false);
 
-  // Dummy Settings-Zustand
+  // Settings Zustand
   const [settings, setSettings] = useState({
     darkMode: false,
     sound: true,
     vibration: true,
   });
 
+  // ⬇️ Settings aus AsyncStorage laden
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(SETTINGS_KEY);
+        if (stored) {
+          setSettings(JSON.parse(stored));
+        }
+      } catch (e) {
+        console.error('Fehler beim Laden der Settings:', e);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  // ⬆️ Setting aktualisieren & speichern
   const toggleSetting = (key) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    setSettings((prev) => {
+      const updated = { ...prev, [key]: !prev[key] };
+      AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
@@ -43,7 +70,7 @@ export default function HomeScreen() {
         Brain <Text style={styles.italic}>Nourishment</Text>
       </Text>
 
-      {/* Buttons */}
+      {/* Game Buttons */}
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('ReactionGame')}
