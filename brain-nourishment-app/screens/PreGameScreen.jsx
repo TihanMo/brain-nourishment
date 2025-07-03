@@ -12,39 +12,25 @@ export default function PreGameScreen({
   icon,
   gameTitle,
   description,
-  highscoreKey,
   onStart,
   onInfo,
   onBack,
+  highscoreLabel,
 }) {
-  const [highscore, setHighscore] = useState(null);
-
-  useEffect(() => {
-    const loadHighscore = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(highscoreKey);
-        if (stored) setHighscore(JSON.parse(stored));
-      } catch (e) {
-        console.error('Fehler beim Laden des Highscores:', e);
-      }
-    };
-    loadHighscore();
-  }, []);
-
   return (
-    <View style={styles.container}>
-      {/* Zurück-Button */}
-      <TouchableOpacity style={styles.backButton} onPress={onBack}>
-        <Ionicons name="arrow-back" size={24} color="#000" />
-        <Text style={styles.backText}>Zurück zum Menü</Text>
-      </TouchableOpacity>
+  <View style={styles.container}>
+    {/* Zurück-Button oben */}
+    <TouchableOpacity style={styles.backButton} onPress={onBack}>
+      <Ionicons name="arrow-back" size={24} color="#000" />
+      <Text style={styles.backText}>Zurück zum Menü</Text>
+    </TouchableOpacity>
 
-      {/* Icon & Titel */}
+    {/* Inhalt wird mittig ausgerichtet */}
+    <View style={styles.contentContainer}>
       <Text style={styles.icon}>{icon}</Text>
       <Text style={styles.title}>{gameTitle}</Text>
       <Text style={styles.description}>{description}</Text>
 
-      {/* Start & Info Button */}
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.startButton} onPress={onStart}>
           <Text style={styles.buttonText}>Start</Text>
@@ -55,11 +41,12 @@ export default function PreGameScreen({
         </TouchableOpacity>
       </View>
 
-      {/* Highscore */}
-      {highscore !== null && (
-        <Text style={styles.highscore}>Highscore: {highscore}ms</Text>
+      {highscoreLabel && (
+        <Text style={styles.highscore}>{highscoreLabel}</Text>
       )}
     </View>
+  </View>
+
   );
 }
 
