@@ -18,17 +18,14 @@ const SETTINGS_KEY = 'brain-nourishment-settings';
 export default function HomeScreen() {
   const navigation = useNavigation();
 
-  // Modal Sichtbarkeit
   const [settingsVisible, setSettingsVisible] = useState(false);
 
-  // Settings Zustand
   const [settings, setSettings] = useState({
     darkMode: false,
     sound: true,
     vibration: true,
   });
 
-  // ⬇️ Settings aus AsyncStorage laden
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -43,7 +40,6 @@ export default function HomeScreen() {
     loadSettings();
   }, []);
 
-  // ⬆️ Setting aktualisieren & speichern
   const toggleSetting = (key) => {
     setSettings((prev) => {
       const updated = { ...prev, [key]: !prev[key] };
@@ -54,7 +50,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Settings Icon (öffnet Modal) */}
+      {/* Settings Icon */}
       <TouchableOpacity
         style={styles.settingsIcon}
         onPress={() => setSettingsVisible(true)}
@@ -73,21 +69,21 @@ export default function HomeScreen() {
       {/* Game Buttons */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('ReactionGame')}
+        onPress={() => navigation.navigate('ReactionGameIntro')}
       >
         <Text style={styles.buttonText}>Reaction Time</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('ColorMatch')}
+        onPress={() => navigation.navigate('ColorMatchIntro')}
       >
         <Text style={styles.buttonText}>Color Match</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('TapTarget')}
+        onPress={() => navigation.navigate('TapTargetIntro')}
       >
         <Text style={styles.buttonText}>Tap the Target</Text>
       </TouchableOpacity>
