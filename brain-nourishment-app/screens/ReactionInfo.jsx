@@ -18,7 +18,7 @@ export default function ReactionInfo() {
         Warte, bis der Bildschirm grün wird, und tippe dann so schnell wie
         möglich. Deine Reaktionszeit wird gemessen.
       </Text>
-    </ScrollView>
+    </View>
   );
 }
 

@@ -19,7 +19,7 @@ export default function TapTheTargetInfo() {
         Tippe nacheinander auf alle Ziele, bevor sie verschwinden. Die
         Reaktionszeit wird immer kürzer.
       </Text>
-    </ScrollView>
+    </View>
   );
 }
 
