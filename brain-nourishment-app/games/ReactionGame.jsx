@@ -76,14 +76,11 @@ export default function ReactionGame() {
       }
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('keydown', handleKeyDown);
-    }
+    const win = typeof window !== 'undefined' ? window : undefined;
+    win?.addEventListener?.('keydown', handleKeyDown);
 
     return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('keydown', handleKeyDown);
-      }
+      win?.removeEventListener?.('keydown', handleKeyDown);
     };
   }, [gameState]);
 
