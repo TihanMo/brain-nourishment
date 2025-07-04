@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
 export default function PreGameScreen({
   icon,
@@ -19,6 +20,7 @@ export default function PreGameScreen({
   unit = '', // neu: Einheit, z. B. "ms", "Punkte", "" (default)
 }) {
   const [highscore, setHighscore] = useState(null);
+  const { theme } = useContext(SettingsContext);
 
   useEffect(() => {
     const loadHighscore = async () => {
@@ -33,32 +35,32 @@ export default function PreGameScreen({
   }, [highscoreKey]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Zurück-Button */}
       <TouchableOpacity style={styles.backButton} onPress={onBack}>
-        <Ionicons name="arrow-back" size={24} color="#000" />
-        <Text style={styles.backText}>Zurück zum Menü</Text>
+        <Ionicons name="arrow-back" size={24} color={theme.text} />
+        <Text style={[styles.backText, { color: theme.text }]}>Zurück zum Menü</Text>
       </TouchableOpacity>
 
       {/* Icon & Titel */}
-      <Text style={styles.icon}>{icon}</Text>
-      <Text style={styles.title}>{gameTitle}</Text>
-      <Text style={styles.description}>{description}</Text>
+      <Text style={[styles.icon, { color: theme.text }]}>{icon}</Text>
+      <Text style={[styles.title, { color: theme.text }]}>{gameTitle}</Text>
+      <Text style={[styles.description, { color: theme.text }]}>{description}</Text>
 
       {/* Start & Info Button */}
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.startButton} onPress={onStart}>
-          <Text style={styles.buttonText}>Start</Text>
+          <Text style={[styles.buttonText, { color: theme.text }]}>Start</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.infoButton} onPress={onInfo}>
-          <Ionicons name="information-circle-outline" size={24} color="#000" />
+          <Ionicons name="information-circle-outline" size={24} color={theme.text} />
         </TouchableOpacity>
       </View>
 
       {/* Highscore */}
       {highscore !== null && (
-        <Text style={styles.highscore}>Highscore: {highscore} {unit}</Text>
+        <Text style={[styles.highscore, { color: theme.text }]}>Highscore: {highscore} {unit}</Text>
       )}
     </View>
   );

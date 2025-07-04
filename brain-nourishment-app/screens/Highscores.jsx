@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
 const HIGHSCORE_KEYS = [
   {
@@ -34,6 +35,7 @@ const HIGHSCORE_KEYS = [
 export default function Highscores() {
   const navigation = useNavigation();
   const [scores, setScores] = useState({});
+  const { theme } = useContext(SettingsContext);
 
   useEffect(() => {
     const loadScores = async () => {
@@ -57,20 +59,20 @@ export default function Highscores() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#000" />
-        <Text style={styles.backText}>Zurück zum Menü</Text>
+        <Ionicons name="arrow-back" size={24} color={theme.text} />
+        <Text style={[styles.backText, { color: theme.text }]}>Zurück zum Menü</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>🏆 Highscores</Text>
+      <Text style={[styles.title, { color: theme.text }]}>🏆 Highscores</Text>
       <ScrollView contentContainerStyle={styles.list}>
         {HIGHSCORE_KEYS.map(({ key, title, emoji, unit }) => (
           <View key={key} style={styles.item}>
             <Text style={styles.emoji}>{emoji}</Text>
             <View style={styles.textContainer}>
-              <Text style={styles.gameTitle}>{title}</Text>
-              <Text style={styles.score}>
+              <Text style={[styles.gameTitle, { color: theme.text }]}>{title}</Text>
+              <Text style={[styles.score, { color: theme.text }] }>
                 {scores[key] !== undefined ? `${scores[key]} ${unit}` : 'Lade...'}
               </Text>
             </View>

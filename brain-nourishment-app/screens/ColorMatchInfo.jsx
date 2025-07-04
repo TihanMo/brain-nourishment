@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
 export default function ColorMatchInfo() {
   const navigation = useNavigation();
+  const { theme } = useContext(SettingsContext);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#000" />
-        <Text style={styles.backText}>Zurück</Text>
+        <Ionicons name="arrow-back" size={24} color={theme.text} />
+        <Text style={[styles.backText, { color: theme.text }]}>Zurück</Text>
       </TouchableOpacity>
-      <Text style={styles.title}>Color Match</Text>
-      <Text style={styles.text}>
+      <Text style={[styles.title, { color: theme.text }]}>Color Match</Text>
+      <Text style={[styles.text, { color: theme.text }]}>
         Entscheide, ob die Farbe des Wortes zur Bedeutung passt. Tippe auf
         "Falsch" oder "Richtig", bevor die Zeit abläuft.
       </Text>

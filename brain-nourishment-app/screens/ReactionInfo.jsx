@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
 export default function ReactionInfo() {
   const navigation = useNavigation();
+  const { theme } = useContext(SettingsContext);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#000" />
-        <Text style={styles.backText}>Zurück</Text>
+        <Ionicons name="arrow-back" size={24} color={theme.text} />
+        <Text style={[styles.backText, { color: theme.text }]}>Zurück</Text>
       </TouchableOpacity>
-      <Text style={styles.title}>Reaction Time</Text>
-      <Text style={styles.text}>
+      <Text style={[styles.title, { color: theme.text }]}>Reaction Time</Text>
+      <Text style={[styles.text, { color: theme.text }]}>
         Warte, bis der Bildschirm grün wird, und tippe dann so schnell wie
         möglich. Deine Reaktionszeit wird gemessen.
       </Text>
