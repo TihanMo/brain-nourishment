@@ -46,77 +46,108 @@ export default function ColorMatchGame() {
     loadHighscore();
   }, []);
 
-  // Spiel starten
+  // Spiel starten & Timer
   useEffect(() => {
     generateNewRound();
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev === 1) {
+        if (prev <= 1) {
           clearInterval(interval);
           setIsGameOver(true);
           checkAndSaveHighscore(score);
+          return 0;
         }
         return prev - 1;
       });
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
-const checkAndSaveHighscore = async (finalScore) => {
-  if (finalScore > (highscore ?? 0)) {
-    try {
-      await AsyncStorage.setItem(HIGHSCORE_KEY, JSON.stringify(finalScore));
-      setHighscore(finalScore);
-    } catch (e) {
-      console.error('Fehler beim Speichern des Highscores:', e);
+  // Tasteneingabe (nur Web)
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (isGameOver || isDisabled) return;
+      if (event.key === '1') {
+        handleAnswer(false);
+      } else if (event.key === '2') {
+        handleAnswer(true);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyPress);
     }
-  }
-};
 
-const generateNewRound = () => {
-  const wordObj = COLORS[Math.floor(Math.random() * COLORS.length)];
-  const match = Math.random() < 0.5;
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', handleKeyPress);
+      }
+    };
+  }, [isGameOver, isDisabled, isMatch]);
 
-  let chosenColor;
-  if (match) {
-    chosenColor = wordObj.color;
-  } else {
-    // Nur Farben wählen, die NICHT gleich dem Wort sind
-    const differentColors = COLORS.filter(c => c.color !== wordObj.color);
-    const randomWrong = differentColors[Math.floor(Math.random() * differentColors.length)];
-    chosenColor = randomWrong.color;
-  }
+  const checkAndSaveHighscore = async (finalScore) => {
+    if (finalScore > (highscore ?? 0)) {
+      try {
+        await AsyncStorage.setItem(HIGHSCORE_KEY, JSON.stringify(finalScore));
+        setHighscore(finalScore);
+      } catch (e) {
+        console.error('Fehler beim Speichern des Highscores:', e);
+      }
+    }
+  };
 
-  setWord(wordObj.name);
-  setColor(chosenColor);
-  setIsMatch(match);
-};
+  const generateNewRound = () => {
+    const wordObj = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const match = Math.random() < 0.5;
 
-const handleAnswer = (answerIsMatch) => {
-  if (isGameOver || isDisabled) return;
+    let chosenColor;
+    if (match) {
+      chosenColor = wordObj.color;
+    } else {
+      const differentColors = COLORS.filter(c => c.color !== wordObj.color);
+      const randomWrong = differentColors[Math.floor(Math.random() * differentColors.length)];
+      chosenColor = randomWrong.color;
+    }
 
-  const correct = answerIsMatch === isMatch;
+    setWord(wordObj.name);
+    setColor(chosenColor);
+    setIsMatch(match);
+  };
 
-  if (correct) {
-    setFeedback('✅ Richtig!');
-    setScore((prev) => prev + 1);
-    generateNewRound();
-  } else {
-    Vibration.vibrate(30);
-    setFeedback('❌ Falsch!');
-    setIsDisabled(true);
-    timerRef.current = setTimeout(() => {
-      setIsDisabled(false);
-      setFeedback(null);
+  const handleAnswer = (answerIsMatch) => {
+    if (isGameOver || isDisabled) return;
+
+    const correct = answerIsMatch === isMatch;
+
+    if (correct) {
+      setFeedback('✅ Richtig!');
+      setScore((prev) => prev + 1);
       generateNewRound();
-    }, 1500);
-  }
-};
+    } else {
+      Vibration.vibrate(30);
+      setFeedback('❌ Falsch!');
+      setIsDisabled(true);
+      timerRef.current = setTimeout(() => {
+        setIsDisabled(false);
+        setFeedback(null);
+        generateNewRound();
+      }, 1000);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Color Match</Text>
       <Text style={styles.timer}>Zeit: {timeLeft}s</Text>
+
+      {/* Menübutton (immer sichtbar) */}
+      {!isGameOver && (
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={18} color="#000" />
+          <Text style={styles.backButtonText}>Zurück</Text>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.centerBox}>
         {isGameOver ? (
@@ -193,16 +224,16 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#000',
-    paddingVertical: 24,
-    paddingHorizontal: 44,
-    borderRadius: 16,
+    paddingVertical: 32,
+    paddingHorizontal: 60,
+    borderRadius: 20,
     alignItems: 'center',
-    flexDirection: 'row',
+    justifyContent: 'center',
   },
   buttonTextWhite: {
     color: '#fff',
-    fontSize: 20,
-    marginLeft: 6,
+    fontSize: 22,
+    textAlign: 'center',
   },
   disabledButton: {
     opacity: 0.5,
@@ -225,5 +256,20 @@ const styles = StyleSheet.create({
     color: '#888',
     marginBottom: 30,
     textAlign: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#eee',
+    borderRadius: 10,
+  },
+  backButtonText: {
+    fontSize: 16,
+    marginLeft: 6,
+    color: '#000',
   },
 });

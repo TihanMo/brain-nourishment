@@ -33,7 +33,7 @@ export default function ColorMatchIntro() {
     <PreGameScreen
       icon="🎨"
       gameTitle="Color Match"
-      description="Stimmt die Farbe des Wortes mit seiner Bedeutung überein? Teste deine Reaktionsfähigkeit."
+      description="Stimmt die Farbe des Wortes mit seiner Bedeutung überein? Teste deine Reaktionsfähigkeit. (Hinweis: Für Tastatur Nutzer ist 1 Falsch, 2 Richtig)"
       highscoreKey={HIGHSCORE_KEY}
       onStart={() => navigation.navigate('ColorMatchGame')}
       onInfo={() => navigation.navigate('ColorMatchInfo')}
