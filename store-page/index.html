@@ -3,92 +3,127 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Brain Nourishment – Mini Games</title>
+  <title>Brain Nourishment – App-Vorschau</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f9f9f9;
-      color: #111;
+      background: #f5f5f5;
+      color: #333;
     }
-
-    .app-container {
-      max-width: 500px;
-      margin: 40px auto;
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-
     .app-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
+      background: linear-gradient(to right, #4caf50, #81c784);
+      color: white;
+      padding: 40px 20px 20px;
+      text-align: center;
     }
-
     .app-icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 20%;
-      background: #eee;
-      object-fit: cover;
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      margin: 0 auto 20px;
+      background: url('./assets/logo.png') center/cover no-repeat;
     }
-
     .app-title {
-      font-size: 24px;
-      font-weight: 700;
-      margin: 0;
+      font-size: 32px;
+      margin: 10px 0;
     }
-
     .app-subtitle {
-      font-size: 16px;
-      color: #666;
+      font-size: 18px;
+      font-weight: 300;
     }
-
-    .description {
-      margin-top: 24px;
-      font-size: 16px;
-      line-height: 1.6;
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
     }
-
+    .section {
+      margin-bottom: 30px;
+    }
+    .section h2 {
+      font-size: 22px;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+    .features ul {
+      padding-left: 20px;
+    }
+    .cta {
+      text-align: center;
+      margin: 40px 0;
+    }
+    .cta a {
+      background: #4caf50;
+      color: white;
+      text-decoration: none;
+      padding: 14px 28px;
+      font-size: 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
     .screenshots {
-      margin-top: 32px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
-
-    .screenshot-img {
-      width: 100%;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    .screenshots img {
+      max-width: 300px;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
   </style>
 </head>
 <body>
-  <div class="app-container">
-    <div class="app-header">
-      <img src="icon.png" alt="App Icon" class="app-icon" />
-      <div>
-        <h1 class="app-title">🧠 Brain Nourishment</h1>
-        <p class="app-subtitle">Mini Games zur Reaktions- und Wahrnehmungsschulung</p>
+  <div class="app-header">
+    <div class="app-icon"></div>
+    <div class="app-title">Brain Nourishment</div>
+    <div class="app-subtitle">Das Gegengift zum Doomscrolling</div>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <h2>Beschreibung</h2>
+      <p>
+        Fühlst du dich manchmal leer nach dem Scrollen durch TikTok oder Insta Reels?
+        Genau hier setzt <strong>Brain Nourishment</strong> an – eine Minispiel-App, die dein Gehirn aktiviert statt betäubt.
+        Teste deine Reaktionszeit, deine Entscheidungsfähigkeit und deine visuelle Aufmerksamkeit in kurzweiligen Spielen.
+      </p>
+    </div>
+
+    <div class="section features">
+      <h2>Features</h2>
+      <ul>
+        <li>⚡ Reaktionsspiele wie <em>Reaction Time</em> & <em>Color Match</em></li>
+        <li>🏆 Highscores zum Vergleichen mit Freunden</li>
+        <li>🎮 Offline spielbar – jederzeit, überall</li>
+        <li>🎨 Cleanes, werbefreies Design mit Dark Mode</li>
+        <li>📱 Entwickelt für iPhone 14 und moderne Android-Geräte</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Screenshots</h2>
+      <div class="screenshots">
+        <img src="./assets/1.png" alt="Screenshot 1" />
+        <img src="./assets/2.png" alt="Screenshot 2" />
       </div>
     </div>
 
-    <div class="description">
-      <strong>Trainiere dein Gehirn mit Spaß!</strong><br /><br />
-      Diese App bietet dir drei schnelle Spiele für zwischendurch:
-      <ul>
-        <li>⚡ Reaction Time – Teste deine Reaktionsgeschwindigkeit</li>
-        <li>🎨 Color Match – Erkenne Farben unter Zeitdruck</li>
-        <li>🎯 Tap the Target – Tippe Ziele, bevor sie verschwinden</li>
-      </ul>
-      Mit Highscore-System, einfacher Steuerung und stylischer Oberfläche – perfekt für kurze Pausen oder tägliches Training!
+    <div class="section">
+      <h2>Technisches</h2>
+      <p>
+        Entwickelt mit <strong>React Native</strong> und <strong>Expo</strong> – getestet auf iOS 18.
+        Die App funktioniert vollständig offline und benötigt keine Anmeldung.
+        Keine Daten werden erhoben oder gespeichert.
+      </p>
     </div>
 
-    <div class="screenshots">
-      <img src="screenshot1.jpg" alt="Screenshot 1" class="screenshot-img" />
-      <img src="screenshot2.jpg" alt="Screenshot 2" class="screenshot-img" />
+    <div class="cta">
+      <a href="https://github.com/TihanMo/brain-nourishment" target="_blank">Zur GitHub-Seite</a>
     </div>
   </div>
 </body>
