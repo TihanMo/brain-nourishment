@@ -6,6 +6,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Vibration,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -67,21 +68,19 @@ export default function ReactionGame() {
     }
   }, [gameState]);
 
-  // Spacebar-Tastendruck erlaubt Reaktion auf Web
+  // Spacebar-Tastendruck nur im Web
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.code === 'Space') {
-        event.preventDefault();
-        handlePress();
-      }
-    };
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const handleKeyDown = (event) => {
+        if (event.code === 'Space') {
+          event.preventDefault();
+          handlePress();
+        }
+      };
 
-    const win = typeof window !== 'undefined' ? window : undefined;
-    win?.addEventListener?.('keydown', handleKeyDown);
-
-    return () => {
-      win?.removeEventListener?.('keydown', handleKeyDown);
-    };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
   }, [gameState]);
 
   // Nutzer hat den Bildschirm getippt
