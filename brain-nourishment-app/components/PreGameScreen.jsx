@@ -16,6 +16,7 @@ export default function PreGameScreen({
   onStart,
   onInfo,
   onBack,
+  unit = '', // neu: Einheit, z. B. "ms", "Punkte", "" (default)
 }) {
   const [highscore, setHighscore] = useState(null);
 
@@ -29,7 +30,7 @@ export default function PreGameScreen({
       }
     };
     loadHighscore();
-  }, []);
+  }, [highscoreKey]);
 
   return (
     <View style={styles.container}>
@@ -57,7 +58,7 @@ export default function PreGameScreen({
 
       {/* Highscore */}
       {highscore !== null && (
-        <Text style={styles.highscore}>Highscore: {highscore}ms</Text>
+        <Text style={styles.highscore}>Highscore: {highscore} {unit}</Text>
       )}
     </View>
   );

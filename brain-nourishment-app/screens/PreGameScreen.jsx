@@ -15,38 +15,60 @@ export default function PreGameScreen({
   onStart,
   onInfo,
   onBack,
-  highscoreLabel,
+  highscoreKey,
+  unit = '', // <- neu: Einheit (z.B. "ms", "Punkte")
 }) {
+  const [highscore, setHighscore] = useState(null);
+
+  useEffect(() => {
+    const loadHighscore = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(highscoreKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (typeof parsed === 'number') {
+            setHighscore(parsed);
+          }
+        }
+      } catch (e) {
+        console.error('Fehler beim Laden des Highscores:', e);
+      }
+    };
+
+    if (highscoreKey) {
+      loadHighscore();
+    }
+  }, [highscoreKey]);
+
   return (
-  <View style={styles.container}>
-    {/* Zurück-Button oben */}
-    <TouchableOpacity style={styles.backButton} onPress={onBack}>
-      <Ionicons name="arrow-back" size={24} color="#000" />
-      <Text style={styles.backText}>Zurück zum Menü</Text>
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={onBack}>
+        <Ionicons name="arrow-back" size={24} color="#000" />
+        <Text style={styles.backText}>Zurück zum Menü</Text>
+      </TouchableOpacity>
 
-    {/* Inhalt wird mittig ausgerichtet */}
-    <View style={styles.contentContainer}>
-      <Text style={styles.icon}>{icon}</Text>
-      <Text style={styles.title}>{gameTitle}</Text>
-      <Text style={styles.description}>{description}</Text>
+      <View style={styles.contentContainer}>
+        <Text style={styles.icon}>{icon}</Text>
+        <Text style={styles.title}>{gameTitle}</Text>
+        <Text style={styles.description}>{description}</Text>
 
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.startButton} onPress={onStart}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.startButton} onPress={onStart}>
+            <Text style={styles.buttonText}>Start</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.infoButton} onPress={onInfo}>
-          <Ionicons name="information-circle-outline" size={24} color="#000" />
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.infoButton} onPress={onInfo}>
+            <Ionicons name="information-circle-outline" size={24} color="#000" />
+          </TouchableOpacity>
+        </View>
+
+        {highscore !== null && (
+          <Text style={styles.highscore}>
+            Highscore: {highscore} {unit}
+          </Text>
+        )}
       </View>
-
-      {highscoreLabel && (
-        <Text style={styles.highscore}>{highscoreLabel}</Text>
-      )}
     </View>
-  </View>
-
   );
 }
 

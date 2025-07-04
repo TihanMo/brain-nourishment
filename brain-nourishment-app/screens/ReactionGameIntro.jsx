@@ -36,6 +36,7 @@ export default function ReactionGameIntro() {
       gameTitle="Reaction Time"
       description="Teste, wie schnell du reagieren kannst, wenn der Bildschirm die Farbe wechselt."
       highscoreKey={HIGHSCORE_KEY}
+      unit="ms"
       onStart={() => navigation.navigate('ReactionGame')}
       onInfo={() => navigation.navigate('ReactionInfo')}
       onBack={() => navigation.goBack()}

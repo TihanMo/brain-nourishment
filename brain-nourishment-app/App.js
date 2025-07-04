@@ -4,7 +4,7 @@ import StackNavigator from './navigation/StackNavigator.jsx';
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer testID="navigation-container">
       <StackNavigator />
     </NavigationContainer>
   );

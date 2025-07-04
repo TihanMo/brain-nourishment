@@ -15,6 +15,8 @@ export default function TapTheTargetGame() {
   const [gameOver, setGameOver] = useState(false);
   const [highscore, setHighscore] = useState(null);
   const timeoutRef = useRef(null);
+  const MIN_TIMEOUT = 800;
+  const REDUCTION_RATE = 0.94;
 
   // Highscore laden
   useEffect(() => {
@@ -54,16 +56,26 @@ export default function TapTheTargetGame() {
     }, timeoutDuration);
   };
 
-  const handlePress = () => {
+    const handlePress = () => {
     if (gameOver) return;
 
     clearTimeout(timeoutRef.current);
     setScore((prev) => prev + 1);
 
-    // Schwierigkeitssteigerung
-    setTimeoutDuration((prev) => Math.max(250, prev * 0.94));
+    // Optional: Weichere Schwierigkeitssteigerung ab Score 15
+    setTimeoutDuration((prev) => {
+        if (score < 10) {
+        return Math.max(MIN_TIMEOUT, prev * REDUCTION_RATE);
+        } else if (score < 20) {
+        return Math.max(MIN_TIMEOUT, prev - 100);
+        } else {
+        return MIN_TIMEOUT; // ab Score 20 bleibt es konstant
+        }
+    });
+
     startNewRound();
-  };
+    };
+
 
   const checkAndSaveHighscore = async (currentScore) => {
     if (currentScore > (highscore ?? 0)) {

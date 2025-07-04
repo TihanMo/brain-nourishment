@@ -35,6 +35,8 @@ export default function TapTheTargetIntro() {
       gameTitle="Tap the Target"
       description="Tippe so schnell du kannst auf die Ziele! Die Reaktionszeit wird immer kürzer."
       highscoreLabel={displayHighscore}
+      highscoreKey={HIGHSCORE_KEY}
+      unit="Punkte"
       onStart={() => navigation.navigate('TapTheTargetGame')}
       onInfo={() => navigation.navigate('TapTheTargetInfo')}
       onBack={() => navigation.goBack()}
