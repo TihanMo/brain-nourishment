@@ -6,6 +6,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Vibration,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -67,8 +68,10 @@ export default function ReactionGame() {
     }
   }, [gameState]);
 
-  // Spacebar-Tastendruck erlaubt Reaktion auf Web
+  // Spacebar-Tastendruck nur im Web
   useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+
     const handleKeyDown = (event) => {
       if (event.code === 'Space') {
         event.preventDefault();
@@ -76,11 +79,10 @@ export default function ReactionGame() {
       }
     };
 
-    const win = typeof window !== 'undefined' ? window : undefined;
-    win?.addEventListener?.('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      win?.removeEventListener?.('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [gameState]);
 
