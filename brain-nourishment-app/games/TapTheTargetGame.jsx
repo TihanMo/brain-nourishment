@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Vibration, Dimensions } from 'react-native';
+import { Audio } from 'expo-av';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
+import { beepBase64 } from '../assets/beepBase64.js';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -8,6 +11,8 @@ const HIGHSCORE_KEY = 'highscore-tapthetarget';
 
 export default function TapTheTargetGame() {
   const navigation = useNavigation();
+  const { settings, theme } = useContext(SettingsContext);
+  const soundRef = useRef(null);
 
   const [targetPosition, setTargetPosition] = useState({ x: 100, y: 100 });
   const [score, setScore] = useState(0);
@@ -17,6 +22,23 @@ export default function TapTheTargetGame() {
   const timeoutRef = useRef(null);
   const MIN_TIMEOUT = 800;
   const REDUCTION_RATE = 0.94;
+
+  useEffect(() => {
+    const loadSound = async () => {
+      soundRef.current = new Audio.Sound();
+      try {
+        await soundRef.current.loadAsync({
+          uri: `data:audio/wav;base64,${beepBase64}`,
+        });
+      } catch (e) {
+        console.error('Fehler beim Laden des Sounds:', e);
+      }
+    };
+    loadSound();
+    return () => {
+      soundRef.current && soundRef.current.unloadAsync();
+    };
+  }, []);
 
   // Highscore laden
   useEffect(() => {
@@ -51,7 +73,9 @@ export default function TapTheTargetGame() {
     setTargetPosition({ x: newX, y: newY });
 
     timeoutRef.current = setTimeout(() => {
-      Vibration.vibrate(200);
+      if (settings.vibration) {
+        Vibration.vibrate(200);
+      }
       setGameOver(true);
     }, timeoutDuration);
   };
@@ -61,6 +85,10 @@ export default function TapTheTargetGame() {
 
     clearTimeout(timeoutRef.current);
     setScore((prev) => prev + 1);
+
+    if (settings.sound && soundRef.current) {
+      soundRef.current.replayAsync().catch(() => {});
+    }
 
     // Optional: Weichere Schwierigkeitssteigerung ab Score 15
     setTimeoutDuration((prev) => {
@@ -95,9 +123,11 @@ export default function TapTheTargetGame() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.score}>Score: {score}</Text>
-      {highscore !== null && <Text style={styles.highscore}>Highscore: {highscore}</Text>}
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text style={[styles.score, { color: theme.text }]}>Score: {score}</Text>
+      {highscore !== null && (
+        <Text style={[styles.highscore, { color: theme.text }]}>Highscore: {highscore}</Text>
+      )}
 
       {!gameOver && (
         <TouchableOpacity
@@ -108,9 +138,9 @@ export default function TapTheTargetGame() {
 
       {gameOver && (
         <View style={styles.centered}>
-          <Text style={styles.gameOver}>Game Over</Text>
-          <Text style={styles.result}>Dein Score: {score}</Text>
-          <Text style={styles.result}>
+          <Text style={[styles.gameOver, { color: theme.text }]}>Game Over</Text>
+          <Text style={[styles.result, { color: theme.text }]}>Dein Score: {score}</Text>
+          <Text style={[styles.result, { color: theme.text }] }>
             {highscore !== null ? `Highscore: ${highscore}` : 'Noch kein Highscore'}
           </Text>
           <TouchableOpacity style={styles.button} onPress={handleRestart}>

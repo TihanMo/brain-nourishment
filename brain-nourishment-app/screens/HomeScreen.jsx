@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -8,61 +8,32 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
 import brainIcon from '../assets/brain.png';
 import SettingsModal from '../components/SettingsModal';
-
-const SETTINGS_KEY = 'brain-nourishment-settings';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
 
   const [settingsVisible, setSettingsVisible] = useState(false);
-
-  const [settings, setSettings] = useState({
-    darkMode: false,
-    sound: true,
-    vibration: true,
-  });
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(SETTINGS_KEY);
-        if (stored) {
-          setSettings(JSON.parse(stored));
-        }
-      } catch (e) {
-        console.error('Fehler beim Laden der Settings:', e);
-      }
-    };
-    loadSettings();
-  }, []);
-
-  const toggleSetting = (key) => {
-    setSettings((prev) => {
-      const updated = { ...prev, [key]: !prev[key] };
-      AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  };
+  const { settings, toggleSetting, theme } = useContext(SettingsContext);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Settings Icon */}
       <TouchableOpacity
         style={styles.settingsIcon}
         onPress={() => setSettingsVisible(true)}
       >
-        <Ionicons name="settings-outline" size={28} color="#333" />
+        <Ionicons name="settings-outline" size={28} color={theme.text} />
       </TouchableOpacity>
 
       {/* Brain Icon */}
       <Image source={brainIcon} style={styles.logo} />
 
       {/* Title */}
-      <Text style={styles.title}>
+      <Text style={[styles.title, { color: theme.text }] }>
         Brain <Text style={styles.italic}>Nourishment</Text>
       </Text>
 
@@ -71,28 +42,28 @@ export default function HomeScreen() {
         style={styles.button}
         onPress={() => navigation.navigate('ReactionGameIntro')}
       >
-        <Text style={styles.buttonText}>Reaction Time</Text>
+        <Text style={[styles.buttonText, { color: theme.text }]}>Reaction Time</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('ColorMatchIntro')}
       >
-        <Text style={styles.buttonText}>Color Match</Text>
+        <Text style={[styles.buttonText, { color: theme.text }]}>Color Match</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('TapTheTargetIntro')}
       >
-        <Text style={styles.buttonText}>Tap the Target</Text>
+        <Text style={[styles.buttonText, { color: theme.text }]}>Tap the Target</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('Highscores')}
       >
-        <Text style={styles.buttonText}>Highscores</Text>
+        <Text style={[styles.buttonText, { color: theme.text }]}>Highscores</Text>
       </TouchableOpacity>
 
       {/* Settings Modal */}
