@@ -11,7 +11,7 @@ const HIGHSCORE_KEY = 'highscore-tapthetarget';
 
 export default function TapTheTargetGame() {
   const navigation = useNavigation();
-  const { settings } = useContext(SettingsContext);
+  const { settings, theme } = useContext(SettingsContext);
   const soundRef = useRef(null);
 
   const [targetPosition, setTargetPosition] = useState({ x: 100, y: 100 });
@@ -123,9 +123,11 @@ export default function TapTheTargetGame() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.score}>Score: {score}</Text>
-      {highscore !== null && <Text style={styles.highscore}>Highscore: {highscore}</Text>}
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text style={[styles.score, { color: theme.text }]}>Score: {score}</Text>
+      {highscore !== null && (
+        <Text style={[styles.highscore, { color: theme.text }]}>Highscore: {highscore}</Text>
+      )}
 
       {!gameOver && (
         <TouchableOpacity
@@ -136,9 +138,9 @@ export default function TapTheTargetGame() {
 
       {gameOver && (
         <View style={styles.centered}>
-          <Text style={styles.gameOver}>Game Over</Text>
-          <Text style={styles.result}>Dein Score: {score}</Text>
-          <Text style={styles.result}>
+          <Text style={[styles.gameOver, { color: theme.text }]}>Game Over</Text>
+          <Text style={[styles.result, { color: theme.text }]}>Dein Score: {score}</Text>
+          <Text style={[styles.result, { color: theme.text }] }>
             {highscore !== null ? `Highscore: ${highscore}` : 'Noch kein Highscore'}
           </Text>
           <TouchableOpacity style={styles.button} onPress={handleRestart}>

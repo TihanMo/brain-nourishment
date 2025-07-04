@@ -1,29 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-// Add your own brain diagram at ../assets/brain-placeholder.png so
-// users can highlight their perceived activity.
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
 export default function ColorMatchInfo() {
   const navigation = useNavigation();
+  const { theme } = useContext(SettingsContext);
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#000" />
-        <Text style={styles.backText}>Zurück</Text>
+        <Ionicons name="arrow-back" size={24} color={theme.text} />
+        <Text style={[styles.backText, { color: theme.text }]}>Zurück</Text>
       </TouchableOpacity>
-      <Text style={styles.title}>Color Match</Text>
-      <Image
-        source={require('../assets/brain-placeholder.png')}
-        style={styles.image}
-        resizeMode="contain"
-      />
-      <Text style={styles.text}>
-        Beim Zuordnen von Farbe und Wort arbeiten dein Okzipitallappen und die Sprachregion
-        eng zusammen. Dein präfrontaler Cortex sorgt dafür, dass du blitzschnell entscheidest,
-        ob die beiden wirklich zusammenpassen. Nutze das Bild oben, um deine gefühlte
-        Aktivität einzuzeichnen.
+      <Text style={[styles.title, { color: theme.text }]}>Color Match</Text>
+      <Text style={[styles.text, { color: theme.text }]}>
+        Entscheide, ob die Farbe des Wortes zur Bedeutung passt. Tippe auf
+        "Falsch" oder "Richtig", bevor die Zeit abläuft.
       </Text>
     </ScrollView>
   );

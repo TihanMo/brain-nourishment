@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const SettingsContext = createContext();
 
+const lightTheme = { background: '#fff', text: '#000' };
+const darkTheme = { background: '#000', text: '#fff' };
 const SETTINGS_KEY = 'brain-nourishment-settings';
 
 export function SettingsProvider({ children }) {
@@ -33,9 +35,11 @@ export function SettingsProvider({ children }) {
       return updated;
     });
   };
+  
+  const theme = settings.darkMode ? darkTheme : lightTheme;
 
   return (
-    <SettingsContext.Provider value={{ settings, toggleSetting }}>
+    <SettingsContext.Provider value={{ settings, toggleSetting, theme }}>
       {children}
     </SettingsContext.Provider>
   );

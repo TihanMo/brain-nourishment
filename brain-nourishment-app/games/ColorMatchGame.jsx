@@ -26,7 +26,7 @@ const HIGHSCORE_KEY = 'highscore-colormatch';
 
 export default function ColorMatchGame() {
   const navigation = useNavigation();
-  const { settings } = useContext(SettingsContext);
+  const { settings, theme } = useContext(SettingsContext);
   const soundRef = useRef(null);
   const [word, setWord] = useState('');
   const [color, setColor] = useState('');
@@ -157,23 +157,23 @@ export default function ColorMatchGame() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Color Match</Text>
-      <Text style={styles.timer}>Zeit: {timeLeft}s</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text style={[styles.title, { color: theme.text }]}>Color Match</Text>
+      <Text style={[styles.timer, { color: theme.text }]}>Zeit: {timeLeft}s</Text>
 
       {!isGameOver && (
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={18} color="#000" />
-          <Text style={styles.backButtonText}>Zurück</Text>
+          <Ionicons name="arrow-back" size={18} color={theme.text} />
+          <Text style={[styles.backButtonText, { color: theme.text }]}>Zurück</Text>
         </TouchableOpacity>
       )}
 
       <View style={styles.centerBox}>
         {isGameOver ? (
           <>
-            <Text style={styles.result}>Zeit vorbei!</Text>
-            <Text style={styles.result}>Dein Score: {score}</Text>
-            <Text style={styles.highscore}>
+            <Text style={[styles.result, { color: theme.text }]}>Zeit vorbei!</Text>
+            <Text style={[styles.result, { color: theme.text }]}>Dein Score: {score}</Text>
+            <Text style={[styles.highscore, { color: theme.text }] }>
               {highscore !== null ? `Highscore: ${highscore}` : 'Noch kein Highscore'}
             </Text>
             <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
@@ -200,7 +200,9 @@ export default function ColorMatchGame() {
                 <Text style={styles.buttonTextWhite}>Richtig (2)</Text>
               </TouchableOpacity>
             </View>
-            {feedback && <Text style={styles.feedback}>{feedback}</Text>}
+            {feedback && (
+              <Text style={[styles.feedback, { color: theme.text }]}>{feedback}</Text>
+            )}
           </>
         )}
       </View>

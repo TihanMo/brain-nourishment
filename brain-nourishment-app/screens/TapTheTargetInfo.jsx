@@ -1,28 +1,23 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-// Provide an image at ../assets/brain-placeholder.png for users
-// to mark which brain regions feel active during this game.
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
+
 
 export default function TapTheTargetInfo() {
   const navigation = useNavigation();
+  const { theme } = useContext(SettingsContext);
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#000" />
-        <Text style={styles.backText}>Zurück</Text>
+        <Ionicons name="arrow-back" size={24} color={theme.text} />
+        <Text style={[styles.backText, { color: theme.text }]}>Zurück</Text>
       </TouchableOpacity>
-      <Text style={styles.title}>Tap the Target</Text>
-      <Image
-        source={require('../assets/brain-placeholder.png')}
-        style={styles.image}
-        resizeMode="contain"
-      />
-      <Text style={styles.text}>
-        Die vielen Ziele trainieren dein visuelles Aufmerksamkeitsfeld. Dein Parietallappen
-        berechnet, wo die Ziele auftauchen, während das Kleinhirn schnelle, präzise Bewegungen
-        steuert. Zeichne im Bild ein, welche Bereiche bei dir arbeiten.
+      <Text style={[styles.title, { color: theme.text }]}>Tap the Target</Text>
+      <Text style={[styles.text, { color: theme.text }]}>
+        Tippe nacheinander auf alle Ziele, bevor sie verschwinden. Die
+        Reaktionszeit wird immer kürzer.
       </Text>
     </ScrollView>
   );

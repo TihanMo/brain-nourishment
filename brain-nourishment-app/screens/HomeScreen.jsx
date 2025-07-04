@@ -17,23 +17,23 @@ export default function HomeScreen() {
   const navigation = useNavigation();
 
   const [settingsVisible, setSettingsVisible] = useState(false);
-  const { settings, toggleSetting } = useContext(SettingsContext);
+  const { settings, toggleSetting, theme } = useContext(SettingsContext);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Settings Icon */}
       <TouchableOpacity
         style={styles.settingsIcon}
         onPress={() => setSettingsVisible(true)}
       >
-        <Ionicons name="settings-outline" size={28} color="#333" />
+        <Ionicons name="settings-outline" size={28} color={theme.text} />
       </TouchableOpacity>
 
       {/* Brain Icon */}
       <Image source={brainIcon} style={styles.logo} />
 
       {/* Title */}
-      <Text style={styles.title}>
+      <Text style={[styles.title, { color: theme.text }] }>
         Brain <Text style={styles.italic}>Nourishment</Text>
       </Text>
 
@@ -42,28 +42,28 @@ export default function HomeScreen() {
         style={styles.button}
         onPress={() => navigation.navigate('ReactionGameIntro')}
       >
-        <Text style={styles.buttonText}>Reaction Time</Text>
+        <Text style={[styles.buttonText, { color: theme.text }]}>Reaction Time</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('ColorMatchIntro')}
       >
-        <Text style={styles.buttonText}>Color Match</Text>
+        <Text style={[styles.buttonText, { color: theme.text }]}>Color Match</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('TapTheTargetIntro')}
       >
-        <Text style={styles.buttonText}>Tap the Target</Text>
+        <Text style={[styles.buttonText, { color: theme.text }]}>Tap the Target</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('Highscores')}
       >
-        <Text style={styles.buttonText}>Highscores</Text>
+        <Text style={[styles.buttonText, { color: theme.text }]}>Highscores</Text>
       </TouchableOpacity>
 
       {/* Settings Modal */}

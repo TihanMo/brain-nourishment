@@ -1,29 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-// This component expects an image at ../assets/brain-placeholder.png
-// Provide your own diagram so users can mark active brain regions.
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
 export default function ReactionInfo() {
   const navigation = useNavigation();
+  const { theme } = useContext(SettingsContext);
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#000" />
-        <Text style={styles.backText}>Zurück</Text>
+        <Ionicons name="arrow-back" size={24} color={theme.text} />
+        <Text style={[styles.backText, { color: theme.text }]}>Zurück</Text>
       </TouchableOpacity>
-      <Text style={styles.title}>Reaction Time</Text>
-      <Image
-        source={require('../assets/brain-placeholder.png')}
-        style={styles.image}
-        resizeMode="contain"
-      />
-      <Text style={styles.text}>
-        Wenn das Display die Farbe ändert, schaltet dein visueller Cortex blitzschnell
-        um. Dein präfrontaler Cortex entscheidet, ob du tippen sollst, und dein motorischer
-        Cortex löst die eigentliche Bewegung aus. Markiere im Bild oben, wo du Aktivität
-        spürst.
+      <Text style={[styles.title, { color: theme.text }]}>Reaction Time</Text>
+      <Text style={[styles.text, { color: theme.text }]}>
+        Warte, bis der Bildschirm grün wird, und tippe dann so schnell wie
+        möglich. Deine Reaktionszeit wird gemessen.
       </Text>
     </ScrollView>
   );
