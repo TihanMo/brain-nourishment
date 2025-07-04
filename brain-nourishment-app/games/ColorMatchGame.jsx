@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Vibration,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -68,16 +69,18 @@ export default function ColorMatchGame() {
     if (isGameOver) checkAndSaveHighscore(score);
   }, [isGameOver]);
 
-  // Tasteneingabe für Web
+  // Tasteneingabe nur im Web
   useEffect(() => {
-    const handleKeyPress = (event) => {
-      if (isGameOver || isDisabled) return;
-      if (event.key === '1') handleAnswer(false);
-      if (event.key === '2') handleAnswer(true);
-    };
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const handleKeyPress = (event) => {
+        if (isGameOver || isDisabled) return;
+        if (event.key === '1') handleAnswer(false);
+        if (event.key === '2') handleAnswer(true);
+      };
 
-    window?.addEventListener?.('keydown', handleKeyPress);
-    return () => window?.removeEventListener?.('keydown', handleKeyPress);
+      window.addEventListener('keydown', handleKeyPress);
+      return () => window.removeEventListener('keydown', handleKeyPress);
+    }
   }, [isGameOver, isDisabled, isMatch]);
 
   const checkAndSaveHighscore = async (finalScore) => {
