@@ -83,7 +83,7 @@ export default function HomeScreen() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('TapTargetIntro')}
+        onPress={() => navigation.navigate('TapTheTargetIntro')}
       >
         <Text style={styles.buttonText}>Tap the Target</Text>
       </TouchableOpacity>

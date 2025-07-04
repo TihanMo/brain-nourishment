@@ -3,22 +3,18 @@ import { useNavigation } from '@react-navigation/native';
 import PreGameScreen from '../components/PreGameScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const HIGHSCORE_KEY = 'highscore-colormatch';
+
 export default function ColorMatchIntro() {
   const navigation = useNavigation();
-
   const [highscore, setHighscore] = useState(null);
-  const HIGHSCORE_KEY = 'highscore-colormatch';
 
   useEffect(() => {
     const loadHighscore = async () => {
       try {
         const stored = await AsyncStorage.getItem(HIGHSCORE_KEY);
-        if (stored) {
-          const value = JSON.parse(stored);
-          setHighscore(typeof value === 'number' ? value : null);
-        } else {
-          setHighscore(null);
-        }
+        const parsed = parseInt(JSON.parse(stored), 10);
+        setHighscore(!isNaN(parsed) ? parsed : null);
       } catch (e) {
         console.error('Fehler beim Laden des ColorMatch-Highscores:', e);
       }
@@ -33,12 +29,11 @@ export default function ColorMatchIntro() {
     <PreGameScreen
       icon="🎨"
       gameTitle="Color Match"
-      description="Stimmt die Farbe des Wortes mit seiner Bedeutung überein? Teste deine Reaktionsfähigkeit. (Hinweis: Für Tastatur Nutzer ist 1 Falsch, 2 Richtig)"
-      highscoreKey={HIGHSCORE_KEY}
+      description="Stimmt die Farbe des Wortes mit seiner Bedeutung überein? Teste deine Reaktionsfähigkeit."
+      highscoreLabel={displayHighscore}
       onStart={() => navigation.navigate('ColorMatchGame')}
       onInfo={() => navigation.navigate('ColorMatchInfo')}
       onBack={() => navigation.goBack()}
-      highscoreLabel={displayHighscore}
     />
   );
 }

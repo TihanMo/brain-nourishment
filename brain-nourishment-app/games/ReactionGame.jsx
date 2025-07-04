@@ -51,7 +51,6 @@ export default function ReactionGame() {
     timerRef.current = setTimeout(() => {
       setGameState('ready');
       setMessage('Jetzt tippen!');
-      startTimeRef.current = Date.now();
     }, delay);
   };
 
@@ -60,6 +59,33 @@ export default function ReactionGame() {
     startGame();
     return () => clearTimeout(timerRef.current);
   }, []);
+
+  // Starte Zeitmessung exakt beim Rendern von "ready" (grün)
+  useEffect(() => {
+    if (gameState === 'ready') {
+      startTimeRef.current = Date.now();
+    }
+  }, [gameState]);
+
+  // Spacebar-Tastendruck erlaubt Reaktion auf Web
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.code === 'Space') {
+        event.preventDefault();
+        handlePress();
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', handleKeyDown);
+      }
+    };
+  }, [gameState]);
 
   // Nutzer hat den Bildschirm getippt
   const handlePress = async () => {
@@ -72,14 +98,11 @@ export default function ReactionGame() {
       const duration = now - startTimeRef.current;
       setReactionTime(duration);
       setGameState('result');
-
       Vibration.vibrate(5);
 
-      // Fake percentile: Schnellere Zeit = höherer Prozentrang
       const fakePercentile = Math.max(1, Math.min(99, Math.round(100 - (duration - 150) / 3)));
       setPercentile(fakePercentile);
 
-      // Highscore speichern (falls neuer Rekord)
       if (highscore === null || duration < highscore) {
         try {
           await AsyncStorage.setItem(HIGHSCORE_KEY, JSON.stringify(duration));
@@ -140,6 +163,9 @@ export default function ReactionGame() {
             <Text style={styles.message}>{message}</Text>
             {gameState === 'tooSoon' && (
               <Text style={styles.feedback}>Tippe, um neu zu starten.</Text>
+            )}
+            {typeof window !== 'undefined' && (
+              <Text style={styles.webHint}>(Tipp: Drücke Leertaste [␣] im Web)</Text>
             )}
           </>
         )}
@@ -218,5 +244,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 8,
   },
+  webHint: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#ffffffcc',
+    textAlign: 'center',
+  },
 });
-

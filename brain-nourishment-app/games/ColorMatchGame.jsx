@@ -38,7 +38,8 @@ export default function ColorMatchGame() {
     const loadHighscore = async () => {
       try {
         const stored = await AsyncStorage.getItem(HIGHSCORE_KEY);
-        if (stored) setHighscore(JSON.parse(stored));
+        const parsed = parseInt(JSON.parse(stored), 10);
+        setHighscore(!isNaN(parsed) ? parsed : null);
       } catch (e) {
         console.error('Fehler beim Laden des Highscores:', e);
       }
@@ -46,7 +47,7 @@ export default function ColorMatchGame() {
     loadHighscore();
   }, []);
 
-  // Spiel starten & Timer
+  // Timer starten
   useEffect(() => {
     generateNewRound();
     const interval = setInterval(() => {
@@ -54,36 +55,29 @@ export default function ColorMatchGame() {
         if (prev <= 1) {
           clearInterval(interval);
           setIsGameOver(true);
-          checkAndSaveHighscore(score);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
-  // Tasteneingabe (nur Web)
+  // Highscore speichern, wenn Spiel vorbei
+  useEffect(() => {
+    if (isGameOver) checkAndSaveHighscore(score);
+  }, [isGameOver]);
+
+  // Tasteneingabe für Web
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (isGameOver || isDisabled) return;
-      if (event.key === '1') {
-        handleAnswer(false);
-      } else if (event.key === '2') {
-        handleAnswer(true);
-      }
+      if (event.key === '1') handleAnswer(false);
+      if (event.key === '2') handleAnswer(true);
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('keydown', handleKeyPress);
-    }
-
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('keydown', handleKeyPress);
-      }
-    };
+    window?.addEventListener?.('keydown', handleKeyPress);
+    return () => window?.removeEventListener?.('keydown', handleKeyPress);
   }, [isGameOver, isDisabled, isMatch]);
 
   const checkAndSaveHighscore = async (finalScore) => {
@@ -100,15 +94,11 @@ export default function ColorMatchGame() {
   const generateNewRound = () => {
     const wordObj = COLORS[Math.floor(Math.random() * COLORS.length)];
     const match = Math.random() < 0.5;
-
-    let chosenColor;
-    if (match) {
-      chosenColor = wordObj.color;
-    } else {
-      const differentColors = COLORS.filter(c => c.color !== wordObj.color);
-      const randomWrong = differentColors[Math.floor(Math.random() * differentColors.length)];
-      chosenColor = randomWrong.color;
-    }
+    const chosenColor = match
+      ? wordObj.color
+      : COLORS.filter(c => c.color !== wordObj.color)[
+          Math.floor(Math.random() * (COLORS.length - 1))
+        ].color;
 
     setWord(wordObj.name);
     setColor(chosenColor);
@@ -121,12 +111,12 @@ export default function ColorMatchGame() {
     const correct = answerIsMatch === isMatch;
 
     if (correct) {
-      setFeedback('✅ Richtig!');
+      setFeedback('Richtig!');
       setScore((prev) => prev + 1);
       generateNewRound();
     } else {
       Vibration.vibrate(30);
-      setFeedback('❌ Falsch!');
+      setFeedback('Falsch!');
       setIsDisabled(true);
       timerRef.current = setTimeout(() => {
         setIsDisabled(false);
@@ -141,7 +131,6 @@ export default function ColorMatchGame() {
       <Text style={styles.title}>Color Match</Text>
       <Text style={styles.timer}>Zeit: {timeLeft}s</Text>
 
-      {/* Menübutton (immer sichtbar) */}
       {!isGameOver && (
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={18} color="#000" />
@@ -171,14 +160,14 @@ export default function ColorMatchGame() {
                 onPress={() => handleAnswer(false)}
                 disabled={isDisabled}
               >
-                <Text style={styles.buttonTextWhite}>Falsch</Text>
+                <Text style={styles.buttonTextWhite}>Falsch (1)</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, isDisabled && styles.disabledButton]}
                 onPress={() => handleAnswer(true)}
                 disabled={isDisabled}
               >
-                <Text style={styles.buttonTextWhite}>Richtig</Text>
+                <Text style={styles.buttonTextWhite}>Richtig (2)</Text>
               </TouchableOpacity>
             </View>
             {feedback && <Text style={styles.feedback}>{feedback}</Text>}
@@ -190,38 +179,12 @@ export default function ColorMatchGame() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  timer: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#444',
-  },
-  centerBox: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  word: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    marginBottom: 40,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 20,
-    marginBottom: 30,
-  },
+  container: { flex: 1, backgroundColor: '#fff', paddingTop: 60, paddingHorizontal: 20 },
+  title: { fontSize: 24, fontWeight: '600', textAlign: 'center' },
+  timer: { fontSize: 18, textAlign: 'center', marginBottom: 30, color: '#444' },
+  centerBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  word: { fontSize: 48, fontWeight: 'bold', marginBottom: 40 },
+  buttonRow: { flexDirection: 'row', gap: 20, marginBottom: 30 },
   button: {
     backgroundColor: '#000',
     paddingVertical: 32,
@@ -230,33 +193,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonTextWhite: {
-    color: '#fff',
-    fontSize: 22,
-    textAlign: 'center',
-  },
-  disabledButton: {
-    opacity: 0.5,
-  },
-  feedback: {
-    fontSize: 20,
-    marginTop: 12,
-    color: '#333',
-    textAlign: 'center',
-  },
-  result: {
-    fontSize: 26,
-    fontWeight: '500',
-    marginBottom: 10,
-    color: '#111',
-    textAlign: 'center',
-  },
-  highscore: {
-    fontSize: 18,
-    color: '#888',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
+  buttonTextWhite: { color: '#fff', fontSize: 22, textAlign: 'center' },
+  disabledButton: { opacity: 0.5 },
+  feedback: { fontSize: 20, marginTop: 12, color: '#333', textAlign: 'center' },
+  result: { fontSize: 26, fontWeight: '500', marginBottom: 10, color: '#111', textAlign: 'center' },
+  highscore: { fontSize: 18, color: '#888', marginBottom: 30, textAlign: 'center' },
   backButton: {
     position: 'absolute',
     top: 20,
@@ -267,9 +208,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     borderRadius: 10,
   },
-  backButtonText: {
-    fontSize: 16,
-    marginLeft: 6,
-    color: '#000',
-  },
+  backButtonText: { fontSize: 16, marginLeft: 6, color: '#000' },
 });
