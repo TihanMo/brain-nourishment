@@ -18,7 +18,7 @@ export default function ReactionInfo() {
         Warte, bis der Bildschirm grün wird, und tippe dann so schnell wie
         möglich. Deine Reaktionszeit wird gemessen.
       </Text>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -28,4 +28,9 @@ const styles = StyleSheet.create({
   backText: { marginLeft: 5, fontSize: 16 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   text: { fontSize: 16, lineHeight: 22 },
+  image: {
+    width: '100%',
+    height: 150,
+    marginBottom: 20,
+  },
 });

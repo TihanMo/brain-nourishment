@@ -18,7 +18,7 @@ export default function ColorMatchInfo() {
         Entscheide, ob die Farbe des Wortes zur Bedeutung passt. Tippe auf
         "Falsch" oder "Richtig", bevor die Zeit abläuft.
       </Text>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -28,4 +28,9 @@ const styles = StyleSheet.create({
   backText: { marginLeft: 5, fontSize: 16 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   text: { fontSize: 16, lineHeight: 22 },
+  image: {
+    width: '100%',
+    height: 150,
+    marginBottom: 20,
+  },
 });

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
+
 export default function TapTheTargetInfo() {
   const navigation = useNavigation();
   const { theme } = useContext(SettingsContext);
@@ -18,7 +19,7 @@ export default function TapTheTargetInfo() {
         Tippe nacheinander auf alle Ziele, bevor sie verschwinden. Die
         Reaktionszeit wird immer kürzer.
       </Text>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -28,4 +29,9 @@ const styles = StyleSheet.create({
   backText: { marginLeft: 5, fontSize: 16 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   text: { fontSize: 16, lineHeight: 22 },
+  image: {
+    width: '100%',
+    height: 150,
+    marginBottom: 20,
+  },
 });
