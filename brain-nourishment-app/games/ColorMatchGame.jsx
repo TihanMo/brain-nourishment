@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,9 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
+import { beepBase64 } from '../assets/beepBase64.js';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -23,6 +26,8 @@ const HIGHSCORE_KEY = 'highscore-colormatch';
 
 export default function ColorMatchGame() {
   const navigation = useNavigation();
+  const { settings } = useContext(SettingsContext);
+  const soundRef = useRef(null);
   const [word, setWord] = useState('');
   const [color, setColor] = useState('');
   const [isMatch, setIsMatch] = useState(false);
@@ -33,6 +38,23 @@ export default function ColorMatchGame() {
   const [feedback, setFeedback] = useState(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const timerRef = useRef(null);
+
+  useEffect(() => {
+    const loadSound = async () => {
+      soundRef.current = new Audio.Sound();
+      try {
+        await soundRef.current.loadAsync({
+          uri: `data:audio/wav;base64,${beepBase64}`,
+        });
+      } catch (e) {
+        console.error('Fehler beim Laden des Sounds:', e);
+      }
+    };
+    loadSound();
+    return () => {
+      soundRef.current && soundRef.current.unloadAsync();
+    };
+  }, []);
 
   // Highscore laden
   useEffect(() => {
@@ -116,9 +138,14 @@ export default function ColorMatchGame() {
     if (correct) {
       setFeedback('Richtig!');
       setScore((prev) => prev + 1);
+      if (settings.sound && soundRef.current) {
+        soundRef.current.replayAsync().catch(() => {});
+      }
       generateNewRound();
     } else {
-      Vibration.vibrate(30);
+      if (settings.vibration) {
+        Vibration.vibrate(30);
+      }
       setFeedback('Falsch!');
       setIsDisabled(true);
       timerRef.current = setTimeout(() => {
