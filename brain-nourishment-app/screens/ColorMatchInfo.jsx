@@ -18,7 +18,7 @@ export default function ColorMatchInfo() {
         Entscheide, ob die Farbe des Wortes zur Bedeutung passt. Tippe auf
         "Falsch" oder "Richtig", bevor die Zeit abläuft.
       </Text>
-    </ScrollView>
+    </View>
   );
 }
 
