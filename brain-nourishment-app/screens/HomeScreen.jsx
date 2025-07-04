@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -8,45 +8,16 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
 
 import brainIcon from '../assets/brain.png';
 import SettingsModal from '../components/SettingsModal';
-
-const SETTINGS_KEY = 'brain-nourishment-settings';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
 
   const [settingsVisible, setSettingsVisible] = useState(false);
-
-  const [settings, setSettings] = useState({
-    darkMode: false,
-    sound: true,
-    vibration: true,
-  });
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(SETTINGS_KEY);
-        if (stored) {
-          setSettings(JSON.parse(stored));
-        }
-      } catch (e) {
-        console.error('Fehler beim Laden der Settings:', e);
-      }
-    };
-    loadSettings();
-  }, []);
-
-  const toggleSetting = (key) => {
-    setSettings((prev) => {
-      const updated = { ...prev, [key]: !prev[key] };
-      AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  };
+  const { settings, toggleSetting } = useContext(SettingsContext);
 
   return (
     <View style={styles.container}>

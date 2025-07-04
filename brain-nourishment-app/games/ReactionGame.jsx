@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   View,
   Text,
@@ -11,11 +11,16 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
+import { SettingsContext } from '../contexts/SettingsContext.jsx';
+import { beepBase64 } from '../assets/beepBase64.js';
 
 const HIGHSCORE_KEY = 'highscore-reaction';
 
 export default function ReactionGame() {
   const navigation = useNavigation();
+  const { settings } = useContext(SettingsContext);
+  const soundRef = useRef(null);
 
   const [gameState, setGameState] = useState('waiting'); // waiting | ready | tooSoon | result
   const [message, setMessage] = useState('Tippe den Bildschirm, sobald er grün wird!');
@@ -26,6 +31,23 @@ export default function ReactionGame() {
 
   const timerRef = useRef(null);
   const startTimeRef = useRef(null);
+
+  useEffect(() => {
+    const loadSound = async () => {
+      soundRef.current = new Audio.Sound();
+      try {
+        await soundRef.current.loadAsync({
+          uri: `data:audio/wav;base64,${beepBase64}`,
+        });
+      } catch (e) {
+        console.error('Fehler beim Laden des Sounds:', e);
+      }
+    };
+    loadSound();
+    return () => {
+      soundRef.current && soundRef.current.unloadAsync();
+    };
+  }, []);
 
   // Lade Highscore bei Initialisierung
   useEffect(() => {
@@ -49,9 +71,16 @@ export default function ReactionGame() {
     setMessage('Tippe den Bildschirm, sobald er grün wird!');
 
     const delay = 2000 + Math.random() * 3000;
-    timerRef.current = setTimeout(() => {
+    timerRef.current = setTimeout(async () => {
       setGameState('ready');
       setMessage('Jetzt tippen!');
+      if (settings.sound && soundRef.current) {
+        try {
+          await soundRef.current.replayAsync();
+        } catch (e) {
+          console.error('Fehler beim Abspielen des Sounds:', e);
+        }
+      }
     }, delay);
   };
 
@@ -94,7 +123,9 @@ export default function ReactionGame() {
       const duration = now - startTimeRef.current;
       setReactionTime(duration);
       setGameState('result');
-      Vibration.vibrate(5);
+      if (settings.vibration) {
+        Vibration.vibrate(5);
+      }
 
       const fakePercentile = Math.max(1, Math.min(99, Math.round(100 - (duration - 150) / 3)));
       setPercentile(fakePercentile);
