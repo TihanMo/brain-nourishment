@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import {
   View,
   Text,
@@ -91,11 +91,36 @@ export default function ColorMatchGame() {
     if (isGameOver) checkAndSaveHighscore(score);
   }, [isGameOver]);
 
+  const handleAnswer = useCallback((answerIsMatch) => {
+    if (isGameOver || isDisabled) return;
+
+    const correct = answerIsMatch === isMatch;
+
+    if (correct) {
+      setFeedback('Richtig!');
+      setScore((prev) => prev + 1);
+      if (settings.sound && soundRef.current) {
+        soundRef.current.replayAsync().catch(() => {});
+      }
+      generateNewRound();
+    } else {
+      if (settings.vibration) {
+        Vibration.vibrate(30);
+      }
+      setFeedback('Falsch!');
+      setIsDisabled(true);
+      timerRef.current = setTimeout(() => {
+        setIsDisabled(false);
+        setFeedback(null);
+        generateNewRound();
+      }, 1000);
+    }
+  }, [isGameOver, isDisabled, isMatch, settings.sound, settings.vibration]);
+
   // Tasteneingabe nur im Web
   useEffect(() => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       const handleKeyPress = (event) => {
-        if (isGameOver || isDisabled) return;
         if (event.key === '1') handleAnswer(false);
         if (event.key === '2') handleAnswer(true);
       };
@@ -103,7 +128,16 @@ export default function ColorMatchGame() {
       window.addEventListener('keydown', handleKeyPress);
       return () => window.removeEventListener('keydown', handleKeyPress);
     }
-  }, [isGameOver, isDisabled, isMatch]);
+  }, [handleAnswer]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   const checkAndSaveHighscore = async (finalScore) => {
     if (finalScore > (highscore ?? 0)) {
@@ -128,32 +162,6 @@ export default function ColorMatchGame() {
     setWord(wordObj.name);
     setColor(chosenColor);
     setIsMatch(match);
-  };
-
-  const handleAnswer = (answerIsMatch) => {
-    if (isGameOver || isDisabled) return;
-
-    const correct = answerIsMatch === isMatch;
-
-    if (correct) {
-      setFeedback('Richtig!');
-      setScore((prev) => prev + 1);
-      if (settings.sound && soundRef.current) {
-        soundRef.current.replayAsync().catch(() => {});
-      }
-      generateNewRound();
-    } else {
-      if (settings.vibration) {
-        Vibration.vibrate(30);
-      }
-      setFeedback('Falsch!');
-      setIsDisabled(true);
-      timerRef.current = setTimeout(() => {
-        setIsDisabled(false);
-        setFeedback(null);
-        generateNewRound();
-      }, 1000);
-    }
   };
 
   return (

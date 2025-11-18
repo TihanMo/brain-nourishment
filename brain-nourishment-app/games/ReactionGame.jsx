@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import {
   View,
   Text,
@@ -63,7 +63,7 @@ export default function ReactionGame() {
   }, []);
 
   // Startet ein neues Spiel mit zufälliger Verzögerung
-  const startGame = () => {
+  const startGame = useCallback(() => {
     setGameState('waiting');
     setReactionTime(null);
     setFeedback('');
@@ -82,13 +82,13 @@ export default function ReactionGame() {
         }
       }
     }, delay);
-  };
+  }, [settings.sound]);
 
   // Starte Spiel beim ersten Laden
   useEffect(() => {
     startGame();
     return () => clearTimeout(timerRef.current);
-  }, []);
+  }, [startGame]);
 
   // Starte Zeitmessung exakt beim Rendern von "ready" (grün)
   useEffect(() => {
@@ -97,23 +97,8 @@ export default function ReactionGame() {
     }
   }, [gameState]);
 
-  // Spacebar-Tastendruck nur im Web
-  useEffect(() => {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      const handleKeyDown = (event) => {
-        if (event.code === 'Space') {
-          event.preventDefault();
-          handlePress();
-        }
-      };
-
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }
-  }, [gameState]);
-
   // Nutzer hat den Bildschirm getippt
-  const handlePress = async () => {
+  const handlePress = useCallback(async () => {
     if (gameState === 'waiting') {
       clearTimeout(timerRef.current);
       setGameState('tooSoon');
@@ -144,7 +129,22 @@ export default function ReactionGame() {
     } else if (gameState === 'tooSoon' || gameState === 'result') {
       startGame();
     }
-  };
+  }, [gameState, settings.vibration, highscore, startGame]);
+
+  // Spacebar-Tastendruck nur im Web
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const handleKeyDown = (event) => {
+        if (event.code === 'Space') {
+          event.preventDefault();
+          handlePress();
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [handlePress]);
 
   const getBackgroundColor = () => {
     switch (gameState) {
