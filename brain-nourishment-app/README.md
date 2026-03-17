@@ -1,4 +1,3 @@
-```markdown
 # Brain Nourishment 🧠📱
 
 Brain Nourishment is a mobile app built with **React Native** using **Expo**. It offers a collection of **offline-capable minigames** that stimulate cognitive skills and help users activate their brain after long periods of passive screen time (e.g., doomscrolling).
