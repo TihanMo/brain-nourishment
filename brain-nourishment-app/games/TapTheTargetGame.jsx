@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Vibration, Dimensions } from 'react-native';
 import { Audio } from 'expo-av';
 import { SettingsContext } from '../contexts/SettingsContext.jsx';
@@ -53,21 +53,7 @@ export default function TapTheTargetGame() {
     loadHighscore();
   }, []);
 
-  // Neue Runde starten
-  useEffect(() => {
-    if (!gameOver) {
-      startNewRound();
-    }
-
-    return () => clearTimeout(timeoutRef.current);
-  }, [gameOver]);
-
-  // Highscore aktualisieren bei Game Over
-  useEffect(() => {
-    if (gameOver) checkAndSaveHighscore(score);
-  }, [gameOver]);
-
-  const startNewRound = () => {
+  const startNewRound = useCallback(() => {
     const newX = Math.random() * (width - 100);
     const newY = Math.random() * (height - 200) + 100;
     setTargetPosition({ x: newX, y: newY });
@@ -78,7 +64,16 @@ export default function TapTheTargetGame() {
       }
       setGameOver(true);
     }, timeoutDuration);
-  };
+  }, [settings.vibration, timeoutDuration]);
+
+  // Neue Runde starten
+  useEffect(() => {
+    if (!gameOver) {
+      startNewRound();
+    }
+
+    return () => clearTimeout(timeoutRef.current);
+  }, [gameOver, startNewRound]);
 
     const handlePress = () => {
     if (gameOver) return;
@@ -105,7 +100,7 @@ export default function TapTheTargetGame() {
     };
 
 
-  const checkAndSaveHighscore = async (currentScore) => {
+  const checkAndSaveHighscore = useCallback(async (currentScore) => {
     if (currentScore > (highscore ?? 0)) {
       try {
         await AsyncStorage.setItem(HIGHSCORE_KEY, JSON.stringify(currentScore));
@@ -114,7 +109,12 @@ export default function TapTheTargetGame() {
         console.error('Fehler beim Speichern des Highscores:', e);
       }
     }
-  };
+  }, [highscore]);
+
+  // Highscore aktualisieren bei Game Over
+  useEffect(() => {
+    if (gameOver) checkAndSaveHighscore(score);
+  }, [gameOver, checkAndSaveHighscore, score]);
 
   const handleRestart = () => {
     setScore(0);

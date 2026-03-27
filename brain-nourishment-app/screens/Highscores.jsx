@@ -39,19 +39,18 @@ export default function Highscores() {
 
   useEffect(() => {
     const loadScores = async () => {
-      const loaded = {};
-      for (const item of HIGHSCORE_KEYS) {
+      // Load all scores in parallel instead of sequentially
+      const promises = HIGHSCORE_KEYS.map(async (item) => {
         try {
           const stored = await AsyncStorage.getItem(item.key);
-          if (stored !== null) {
-            loaded[item.key] = JSON.parse(stored);
-          } else {
-            loaded[item.key] = '—';
-          }
+          return [item.key, stored !== null ? JSON.parse(stored) : '—'];
         } catch (e) {
-          loaded[item.key] = 'Fehler';
+          return [item.key, 'Fehler'];
         }
-      }
+      });
+
+      const results = await Promise.all(promises);
+      const loaded = Object.fromEntries(results);
       setScores(loaded);
     };
 
